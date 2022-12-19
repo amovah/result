@@ -3,6 +3,7 @@ package result
 type ResultChannel[T any] interface {
 	Ok() <-chan T
 	Err() <-chan error
+	Push(Result[T])
 }
 
 type resultChannel[T any] struct {
