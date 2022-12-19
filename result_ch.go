@@ -1,19 +1,19 @@
 package result
 
-type ResultCh[T any] struct {
+type ResultChannel[T any] struct {
 	res chan T
 	err chan error
 }
 
-func (r ResultCh[T]) Ok() <-chan T {
+func (r ResultChannel[T]) Ok() <-chan T {
 	return r.res
 }
 
-func (r ResultCh[T]) Err() <-chan error {
+func (r ResultChannel[T]) Err() <-chan error {
 	return r.err
 }
 
-func (r ResultCh[T]) Push(val Result[T]) {
+func (r ResultChannel[T]) Push(val Result[T]) {
 	if val.IsErr() {
 		r.err <- val.Err()
 		return
@@ -22,8 +22,8 @@ func (r ResultCh[T]) Push(val Result[T]) {
 	r.res <- val.Ok()
 }
 
-func Channel[T any]() *ResultCh[T] {
-	return &ResultCh[T]{
+func Channel[T any]() *ResultChannel[T] {
+	return &ResultChannel[T]{
 		res: make(chan T),
 		err: make(chan error),
 	}
