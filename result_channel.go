@@ -1,9 +1,11 @@
 package result
 
-type ResultChannel[T any] interface {
+type ChanneledResult[T any] interface {
 	Ok() <-chan T
 	Err() <-chan error
 	Push(Result[T])
+	PushOk(T)
+	PushErr(error)
 	Close()
 }
 
@@ -29,12 +31,20 @@ func (r resultChannel[T]) Push(val Result[T]) {
 	r.res <- val.Ok()
 }
 
+func (r resultChannel[T]) PushOk(val T) {
+	r.res <- val
+}
+
+func (r resultChannel[T]) PushErr(err error) {
+	r.err <- err
+}
+
 func (r resultChannel[T]) Close() {
 	close(r.err)
 	close(r.res)
 }
 
-func Channel[T any]() ResultChannel[T] {
+func Channel[T any]() ChanneledResult[T] {
 	return &resultChannel[T]{
 		res: make(chan T),
 		err: make(chan error),
