@@ -4,6 +4,7 @@ type ResultChannel[T any] interface {
 	Ok() <-chan T
 	Err() <-chan error
 	Push(Result[T])
+	Close()
 }
 
 type resultChannel[T any] struct {
@@ -26,6 +27,11 @@ func (r resultChannel[T]) Push(val Result[T]) {
 	}
 
 	r.res <- val.Ok()
+}
+
+func (r resultChannel[T]) Close() {
+	close(r.err)
+	close(r.res)
 }
 
 func Channel[T any]() ResultChannel[T] {
